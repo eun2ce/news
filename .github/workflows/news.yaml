@@ -1,0 +1,40 @@
+name: Daily News Fetch
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install deps (uv)
+        run: uv sync --frozen
+
+      - name: Run collector
+        env:
+          OUTPUT_ROOT: dataset
+          SOURCES_FILE: sources.yaml
+          PER_SOURCE_LIMIT: "20"
+          TOTAL_LIMIT: "200"
+          FETCH_FULLTEXT: "false"   # 본문 수집 켜려면 "true"
+          FULLTEXT_LIMIT: "40"
+        run: uv run python news_aggregator.py
+
+      - name: Commit & push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(dataset): daily news JSONL/Parquet"
+          file_pattern: dataset/**/*
+

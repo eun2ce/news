@@ -1,0 +1,12 @@
+sources:
+  - name: 연합뉴스 정치
+    url: https://www.yna.co.kr/rss/politics.xml
+  - name: 연합뉴스 경제
+    url: https://www.yna.co.kr/rss/economy.xml
+  - name: 한겨레 전체
+    url: http://www.hani.co.kr/rss/
+  - name: 경향신문 주요뉴스
+    url: http://www.khan.co.kr/rss/rssdata/kh_today.xml
+  - name: 조선일보 주요뉴스
+    url: https://www.chosun.com/arc/outboundfeeds/rss/?outputType=xml
+
