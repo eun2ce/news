@@ -2,17 +2,24 @@ name: Daily News Fetch
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 23 * * *"   # 매일 08:00 KST
   workflow_dispatch:
+
+concurrency:
+  group: dataset-updater
+  cancel-in-progress: true
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 리베이스/푸시에 필요
 
       - name: Install uv
         run: |
@@ -32,9 +39,15 @@ jobs:
           FULLTEXT_LIMIT: "40"
         run: uv run python news_aggregator.py
 
+      # 🔧 non-fast-forward 방지: 원격 이력을 먼저 리베이스로 받아온다
+      - name: Rebase pull
+        run: |
+          git fetch origin main
+          git pull --rebase origin main || true
+
       - name: Commit & push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(dataset): daily news JSONL/Parquet"
           file_pattern: dataset/**/*
-
+          push_options: --force-with-lease
