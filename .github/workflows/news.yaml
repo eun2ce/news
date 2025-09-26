@@ -28,7 +28,7 @@ jobs:
           SOURCES_FILE: sources.yaml
           PER_SOURCE_LIMIT: "20"
           TOTAL_LIMIT: "200"
-          FETCH_FULLTEXT: "false"   # 본문 수집 켜려면 "true"
+          FETCH_FULLTEXT: "true"
           FULLTEXT_LIMIT: "40"
         run: uv run python news_aggregator.py
 
